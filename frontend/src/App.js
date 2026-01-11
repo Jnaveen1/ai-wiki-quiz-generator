@@ -20,16 +20,32 @@ function App() {
     setArticles(data);
   };
 
-  const generateQuiz = async () => {
-    if (!url) return;
-    setLoading(true);
+const generateQuiz = async () => {
+  if (!url) return;
+  setLoading(true);
 
-    await fetch(`${API}/generate-quiz?url=${encodeURIComponent(url)}`);
-    setUrl("");
-    await loadArticles();
+  // 1. Generate quiz
+  const res = await fetch(
+    `${API}/generate-quiz?url=${encodeURIComponent(url)}`
+  );
+  const data = await res.json();
 
-    setLoading(false);
-  };
+  // 2. Load quizzes immediately
+  const quizRes = await fetch(
+    `${API}/articles/${data.article_id}/quizzes`
+  );
+  const quizData = await quizRes.json();
+
+  setQuizzes(quizData);
+
+  // 3. Refresh articles & UI
+  await loadArticles();
+  setSelectedArticle({ id: data.article_id });
+
+  setUrl("");
+  setLoading(false);
+};
+
 
   const loadQuizzes = async (article) => {
     setSelectedArticle(article);
