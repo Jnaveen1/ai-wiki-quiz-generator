@@ -9,16 +9,26 @@ function App() {
   const [selectedArticle, setSelectedArticle] = useState(null);
   const [quizzes, setQuizzes] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [articlesLoading, setArticlesLoading] = useState(false);
+
 
   useEffect(() => {
     loadArticles();
   }, []);
 
-  const loadArticles = async () => {
+const loadArticles = async () => {
+  setArticlesLoading(true);
+  try {
     const res = await fetch(`${API}/articles`);
     const data = await res.json();
     setArticles(data);
-  };
+  } catch (err) {
+    console.error("Failed to load articles");
+  } finally {
+    setArticlesLoading(false);
+  }
+};
+
 
 const generateQuiz = async () => {
   if (!url) return;
@@ -78,6 +88,7 @@ const generateQuiz = async () => {
       <div className="layout">
         <div className="sidebar">
           <h3>Articles</h3>
+          {articlesLoading && <p className="info">Loading articles...</p>}
           {articles.map((a) => (
             <div
               key={a.id}
