@@ -15,24 +15,18 @@ def scrape_wikipedia(url: str):
 
     soup = BeautifulSoup(response.text, "html.parser")
 
-    # ----------------------------
     # TITLE
-    # ----------------------------
     title_tag = soup.find("h1")
     title = title_tag.get_text(strip=True) if title_tag else ""
 
-    # ----------------------------
     # MAIN CONTENT CONTAINERS
-    # ----------------------------
     content_div = soup.find("div", id="mw-content-text")
     parser_output = soup.find("div", class_="mw-parser-output")
 
     if not content_div or not parser_output:
         raise Exception("Wikipedia page structure not found")
 
-    # ----------------------------
     # PARAGRAPHS (SUMMARY + CONTENT)
-    # ----------------------------
     paragraphs = content_div.find_all("p")
 
     cleaned_paragraphs = []
@@ -59,18 +53,14 @@ def scrape_wikipedia(url: str):
     # Full content for LLM grounding
     content = " ".join(cleaned_paragraphs)
 
-    # ----------------------------
     # SECTION HEADINGS
-    # ----------------------------
     sections = []
     for h2 in parser_output.find_all("h2"):
         span = h2.find("span", class_="mw-headline")
         if span:
             sections.append(span.get_text(strip=True))
 
-    # ----------------------------
     # FINAL STRUCTURED OUTPUT
-    # ----------------------------
     return {
         "title": title,
         "summary": summary,
