@@ -1,4 +1,4 @@
-const BASE_URL = "http://127.0.0.1:8000"; // change later to deployed backend
+const BASE_URL = "https://ai-wiki-quiz-generator-5tab.onrender.com"; // change later to deployed backend
 
 export async function generateQuiz(url) {
   const res = await fetch(
