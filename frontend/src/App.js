@@ -24,27 +24,33 @@ const generateQuiz = async () => {
   if (!url) return;
   setLoading(true);
 
-  // 1. Generate quiz
-  const res = await fetch(
-    `${API}/generate-quiz?url=${encodeURIComponent(url)}`
-  );
-  const data = await res.json();
+  try {
+    // 1. Generate quiz
+    const res = await fetch(
+      `${API}/generate-quiz?url=${encodeURIComponent(url)}`
+    );
+    const data = await res.json();
 
-  // 2. Load quizzes immediately
-  const quizRes = await fetch(
-    `${API}/articles/${data.article_id}/quizzes`
-  );
-  const quizData = await quizRes.json();
+    // 2. Fetch quizzes
+    const quizRes = await fetch(
+      `${API}/articles/${data.article_id}/quizzes`
+    );
+    const quizData = await quizRes.json();
 
-  setQuizzes(quizData);
+    setQuizzes(quizData);
+    setSelectedArticle({ id: data.article_id });
 
-  // 3. Refresh articles & UI
-  await loadArticles();
-  setSelectedArticle({ id: data.article_id });
-
-  setUrl("");
-  setLoading(false);
+    await loadArticles();
+    setUrl("");
+  } catch (err) {
+    console.error("Quiz generation failed:", err);
+    alert("Something went wrong. Please try again.");
+  } finally {
+    // 🔑 THIS was missing logically
+    setLoading(false);
+  }
 };
+
 
 
   const loadQuizzes = async (article) => {
